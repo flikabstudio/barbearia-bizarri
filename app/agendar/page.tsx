@@ -1,7 +1,7 @@
 'use client'
 // app/agendar/page.tsx
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient, getTenant, getServicos, getSlotsLivres, criarAgendamento, getUser, getAgendamentosCliente } from '@/lib/supabase'
 import type { Tenant, Servico, Agendamento } from '@/types'
@@ -20,8 +20,8 @@ function formatarMoeda(valor: number) {
   return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 }
 
-// ─── Componente principal ──────────────────────────────────────────────────────
-export default function AgendarPage() {
+// ─── Componente com lógica ──────────────────────────────────────────────────────
+function AgendarContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const isGuest = searchParams.get('guest') === 'true'
@@ -422,5 +422,14 @@ export default function AgendarPage() {
         )}
       </div>
     </div>
+  )
+}
+
+// ─── Export com Suspense ───────────────────────────────────────────────────────
+export default function AgendarPage() {
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#0A0A0A' }} />}>
+      <AgendarContent />
+    </Suspense>
   )
 }
